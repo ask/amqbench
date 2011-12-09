@@ -17,8 +17,8 @@ JSONIMP = os.environ.get("JSONIMP")
 if JSONIMP:
     anyjson.force_implementation(JSONIMP)
 MESSAGE = {"task": "foo.bar", "args": (1, 2), "kwargs": {"callback": "foo"}}
-DURABLE = str_to_bool[os.environ.get("DURABLE", "yes").lower()]
-DM = int(os.environ.get("DM", 2))  # delivery-mode
+DURABLE = str_to_bool[os.environ.get("DURABLE", "no").lower()]
+DM = int(os.environ.get("DM", 1))  # delivery-mode
 
 
 class _Consumer(Consumer):
