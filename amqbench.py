@@ -17,8 +17,8 @@ JSONIMP = os.environ.get("JSONIMP")
 if JSONIMP:
     anyjson.force_implementation(JSONIMP)
 MESSAGE = {"task": "foo.bar", "args": (1, 2), "kwargs": {"callback": "foo"}}
-DURABLE = str_to_bool[os.environ.get("DURABLE", "no").lower()]
-DM = int(os.environ.get("DM", 1))  # delivery-mode
+DURABLE = str_to_bool[os.environ.get("DURABLE", "yes").lower()]
+DM = int(os.environ.get("DM", 2))  # delivery-mode
 
 
 class _Consumer(Consumer):
@@ -95,11 +95,17 @@ def _publish(n, Connection, Message, name):
     chan = conn.channel()
     chan = _declare(chan, name)
 
+    if name == 'librabbitmq':
+        _Message = lambda: (serialize(MESSAGE), props)
+    else:
+        _Message = lambda: Message(serialize(MESSAGE), **kwargs)
+
+
     start = time()
     for i in xrange(n + 2000):
         if not i % 10000:
             print(i)
-        message = Message(serialize(MESSAGE), **kwargs)
+        message = _Message()
         chan.basic_publish(message, exchange=name, routing_key=name)
     print(time() - start)
 
@@ -161,11 +167,11 @@ class kamqp(object):
 class librabbitmq(object):
 
     def publish(self, n=52000):
-        from pylibrabbitmq import Connection, Message
+        from librabbitmq import Connection, Message
         _publish(n, Connection, Message, "librabbitmq")
 
     def consume(self, n=52000):
-        from pylibrabbitmq import Connection
+        from librabbitmq import Connection
         _consume(n, Connection, "librabbitmq")
 
 

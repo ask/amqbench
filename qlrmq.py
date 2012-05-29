@@ -2,5 +2,5 @@
 # shortcut for librabbitmq both publish and consume
 from amqbench import librabbitmq
 
-librabbitmq().publish()
-librabbitmq().consume()
+librabbitmq().publish(100000)
+librabbitmq().consume(100000)
